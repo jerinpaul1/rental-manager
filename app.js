@@ -66,20 +66,26 @@ async function loadProperties() {
     const tenantList = clone.querySelector('.tenant-list');
     const tenantForm = clone.querySelector('.tenant-form');
 
-    // ✅ Load tenants by property_id only
+    // Load tenants by property_id only
     const { data: tenants, error: tenantError } = await supabaseClient
       .from('Tenants')
       .select('*')
       .eq('property_id', prop.id);
 
+    tenantList.innerHTML = '';
+
     if (tenantError) {
       tenantList.innerHTML = `<li>Error loading tenants: ${tenantError.message}</li>`;
-    } else if (tenants.length === 0) {
+    } else if (!tenants || tenants.length === 0) {
       tenantList.innerHTML = '<li>No tenants added.</li>';
     } else {
       tenants.forEach(tenant => {
         const li = document.createElement('li');
-        li.textContent = `${tenant.name} (${tenant.phone}, ${tenant.email}) – Move-in: ${tenant.move_in_date}`;
+        li.innerHTML = `
+          <strong>${tenant.name}</strong> (${tenant.phone}, ${tenant.email})<br>
+          Move-in: ${tenant.move_in_date || 'N/A'}<br>
+          Move-out: ${tenant.move_out_date || 'N/A'}
+        `;
 
         const delBtn = document.createElement('button');
         delBtn.textContent = 'Remove';
@@ -101,7 +107,7 @@ async function loadProperties() {
       });
     }
 
-    // Handle adding a new tenant
+    // Add new tenant
     tenantForm.onsubmit = async (e) => {
       e.preventDefault();
 
@@ -110,13 +116,15 @@ async function loadProperties() {
       const phone = formData.get('phone');
       const email = formData.get('email');
       const move_in_date = formData.get('move_in_date');
+      const move_out_date = formData.get('move_out_date');
 
       const { error } = await supabaseClient.from('Tenants').insert([{
         property_id: prop.id,
         name,
         phone,
         email,
-        move_in_date
+        move_in_date,
+        move_out_date
       }]);
 
       if (error) {
