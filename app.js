@@ -5,7 +5,11 @@ const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
 
   if (error) {
     document.getElementById("auth-error").innerText = error.message;
