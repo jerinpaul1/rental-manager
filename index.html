@@ -7,23 +7,39 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="container">
-  <h1>Login</h1>
-  <div id="login-section">
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
-    <button onclick="login()">Log In</button>
-    <p id="error" class="error"></p>
+  <div class="container">
+    <h1>Login</h1>
+
+    <!-- LOGIN SECTION -->
+    <div id="login-section">
+      <input id="email" type="email" placeholder="Email" />
+      <input id="password" type="password" placeholder="Password" />
+      <button onclick="login()">Log In</button>
+      <p id="error" class="error"></p>
+    </div>
+
+    <!-- DASHBOARD SECTION -->
+    <div id="dashboard" style="display: none;">
+      <h2>Your Properties</h2>
+
+      <!-- ADD PROPERTY FORM -->
+      <h3>Add Property</h3>
+      <form id="propertyForm">
+        <input id="address" type="text" placeholder="Address" required />
+        <input id="rent" type="number" placeholder="Monthly Rent (£)" required />
+        <button type="submit">Add Property</button>
+      </form>
+      <p id="formMessage" class="message"></p>
+
+      <!-- PROPERTY LIST -->
+      <ul id="propertyList"></ul>
+
+      <button onclick="logout()">Log Out</button>
+    </div>
   </div>
 
-  <div id="dashboard" style="display: none;">
-    <h2>Your Properties</h2>
-    <ul id="propertyList"></ul>
-    <button onclick="logout()">Log Out</button>
-  </div>
-</div>
+  <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
   <script src="app.js"></script>
 </body>
 </html>
