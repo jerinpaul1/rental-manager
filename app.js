@@ -25,7 +25,7 @@ async function login() {
     return;
   }
 
-  document.querySelector('h1').textContent = `Welcome, ${email}`;
+  document.querySelector('h1').textContent = `Welcome`;
   document.getElementById('login-section').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
   alert("Login successful!");
