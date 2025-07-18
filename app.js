@@ -1,4 +1,6 @@
-const supabase = supabase.createClient(
+const { createClient } = supabase;
+
+const supabaseClient = createClient(
   'https://mlzpgtjjpzqcljepbise.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1senBndGpqcHpxY2xqZXBiaXNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4MzgzNjQsImV4cCI6MjA2ODQxNDM2NH0.0BGyl12E6ZU6qFFpSxWvvgc3AA9gXul6R2esTPa1iCg'
 );
@@ -13,7 +15,7 @@ async function login() {
     return;
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
     email,
     password
   });
@@ -28,25 +30,13 @@ async function login() {
   document.getElementById('login-section').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
 
-  // Optional: show success message
-  alert("Login successful!");
-
-  loadProperties();
-}
-
-  errorEl.textContent = "";
-  document.querySelector('h1').textContent = `Welcome, ${email}`;
-  document.getElementById('login-section').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
-
-  // Optional: show success message
   alert("Login successful!");
 
   loadProperties();
 }
 
 async function loadProperties() {
-  const { data, error } = await supabase.from('Properties').select('*');
+  const { data, error } = await supabaseClient.from('Properties').select('*');
 
   const list = document.getElementById('propertyList');
   list.innerHTML = '';
@@ -69,6 +59,6 @@ async function loadProperties() {
 }
 
 async function logout() {
-  await supabase.auth.signOut();
+  await supabaseClient.auth.signOut();
   window.location.reload();
 }
