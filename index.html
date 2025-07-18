@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rental Manager</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="auth-section">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <p id="auth-error"></p>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <h2>Welcome</h2>
+    <button onclick="logout()">Logout</button>
+    <div id="property-list"></div>
+    <h3>Add New Property</h3>
+    <input type="text" id="new-address" placeholder="Address" />
+    <input type="number" id="new-rent" placeholder="Monthly Rent" />
+    <button onclick="addProperty()">Add Property</button>
+    <p id="add-msg"></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
