@@ -16,7 +16,10 @@ async function login() {
     return;
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
 
   if (error) {
     errorEl.textContent = "Login failed: " + error.message;
@@ -24,7 +27,7 @@ async function login() {
   }
 
   errorEl.textContent = "";
-  document.querySelector('h1').textContent = `Welcome, ${email}`;
+  document.querySelector('h1').textContent = `Welcome`;
   document.getElementById('login-section').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
 
