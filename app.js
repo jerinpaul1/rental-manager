@@ -33,7 +33,7 @@ async function login() {
   loadProperties();
 }
 
-// Load user-specific properties and tenants
+// Load user-specific properties and related tenants
 async function loadProperties() {
   const { data: { user } } = await supabaseClient.auth.getUser();
   if (!user) return;
@@ -66,12 +66,11 @@ async function loadProperties() {
     const tenantList = clone.querySelector('.tenant-list');
     const tenantForm = clone.querySelector('.tenant-form');
 
-    // Load tenants for this property
+    // ✅ Load tenants by property_id only
     const { data: tenants, error: tenantError } = await supabaseClient
       .from('Tenants')
       .select('*')
-      .eq('property_id', prop.id)
-      .eq('user_id', user.id);
+      .eq('property_id', prop.id);
 
     if (tenantError) {
       tenantList.innerHTML = `<li>Error loading tenants: ${tenantError.message}</li>`;
@@ -86,7 +85,10 @@ async function loadProperties() {
         delBtn.textContent = 'Remove';
         delBtn.style.marginLeft = '10px';
         delBtn.onclick = async () => {
-          const { error } = await supabaseClient.from('Tenants').delete().eq('id', tenant.id);
+          const { error } = await supabaseClient
+            .from('Tenants')
+            .delete()
+            .eq('id', tenant.id);
           if (error) {
             alert('Failed to remove tenant: ' + error.message);
           } else {
@@ -99,7 +101,7 @@ async function loadProperties() {
       });
     }
 
-    // Handle adding new tenant
+    // Handle adding a new tenant
     tenantForm.onsubmit = async (e) => {
       e.preventDefault();
 
@@ -109,8 +111,7 @@ async function loadProperties() {
       const email = formData.get('email');
       const move_in_date = formData.get('move_in_date');
 
-      const { data, error } = await supabaseClient.from('Tenants').insert([{
-        user_id: user.id,
+      const { error } = await supabaseClient.from('Tenants').insert([{
         property_id: prop.id,
         name,
         phone,
@@ -130,7 +131,7 @@ async function loadProperties() {
   }
 }
 
-// Add property
+// Add a new property
 document.getElementById('propertyForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -148,7 +149,7 @@ document.getElementById('propertyForm').addEventListener('submit', async (e) => 
   const { error } = await supabaseClient.from('Properties').insert([
     {
       user_id: user.id,
-      address: address,
+      address,
       monthly_rent: rent
     }
   ]);
@@ -163,7 +164,7 @@ document.getElementById('propertyForm').addEventListener('submit', async (e) => 
   loadProperties();
 });
 
-// Logout function
+// Logout
 async function logout() {
   await supabaseClient.auth.signOut();
   window.location.reload();
