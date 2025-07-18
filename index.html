@@ -38,6 +38,29 @@
     </div>
   </div>
 
+  <!-- PROPERTY TEMPLATE WITH TENANTS -->
+  <template id="propertyTemplate">
+    <li class="property">
+      <div class="property-header">
+        <strong class="property-address"></strong> – Rent: £<span class="property-rent"></span>
+      </div>
+
+      <!-- TENANTS SECTION -->
+      <div class="tenants">
+        <h4>Tenants</h4>
+        <ul class="tenant-list"></ul>
+
+        <form class="tenant-form">
+          <input type="text" name="name" placeholder="Name" required />
+          <input type="text" name="phone" placeholder="Phone" required />
+          <input type="email" name="email" placeholder="Email" required />
+          <input type="date" name="move_in_date" required />
+          <button type="submit">Add Tenant</button>
+        </form>
+      </div>
+    </li>
+  </template>
+
   <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
