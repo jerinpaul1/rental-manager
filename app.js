@@ -1,4 +1,4 @@
-// Initialize Supabase client properly
+// Initialize Supabase client
 const { createClient } = supabase;
 
 const supabaseClient = createClient(
@@ -6,12 +6,11 @@ const supabaseClient = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1senBndGpqcHpxY2xqZXBiaXNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4MzgzNjQsImV4cCI6MjA2ODQxNDM2NH0.0BGyl12E6ZU6qFFpSxWvvgc3AA9gXul6R2esTPa1iCg'
 );
 
-// Login function triggered by button
+// Login function
 async function login() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
   const errorEl = document.getElementById('error');
-
   errorEl.textContent = "";
 
   if (!email || !password) {
@@ -26,21 +25,17 @@ async function login() {
     return;
   }
 
-  // Successful login UI update
   document.querySelector('h1').textContent = `Welcome, ${email}`;
   document.getElementById('login-section').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
-
   alert("Login successful!");
+
   loadProperties();
 }
 
-// Load properties for user
+// Load user-specific properties
 async function loadProperties() {
-  const {
-    data: { user }
-  } = await supabaseClient.auth.getUser();
-
+  const { data: { user } } = await supabaseClient.auth.getUser();
   if (!user) return;
 
   const { data, error } = await supabaseClient
@@ -68,7 +63,7 @@ async function loadProperties() {
   });
 }
 
-// Add property form submit
+// Add property
 document.getElementById('propertyForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -76,9 +71,7 @@ document.getElementById('propertyForm').addEventListener('submit', async (e) => 
   const rent = parseFloat(document.getElementById('monthly_rent').value);
   const message = document.getElementById('formMessage');
 
-  const {
-    data: { user }
-  } = await supabaseClient.auth.getUser();
+  const { data: { user } } = await supabaseClient.auth.getUser();
 
   if (!user) {
     message.textContent = "Please login first.";
@@ -86,7 +79,11 @@ document.getElementById('propertyForm').addEventListener('submit', async (e) => 
   }
 
   const { error } = await supabaseClient.from('Properties').insert([
-    { user_id: user.id, address, rent }
+    {
+      user_id: user.id,
+      address: address,
+      monthly_rent: rent
+    }
   ]);
 
   if (error) {
@@ -94,7 +91,7 @@ document.getElementById('propertyForm').addEventListener('submit', async (e) => 
     return;
   }
 
-  message.textContent = "Property added!";
+  message.textContent = "Property added successfully!";
   document.getElementById('propertyForm').reset();
   loadProperties();
 });
