@@ -1,10 +1,11 @@
+// Initialize Supabase
 const { createClient } = supabase;
-
-const supabaseClient = createClient(
+const supabase = supabase.createClient(
   'https://mlzpgtjjpzqcljepbise.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1senBndGpqcHpxY2xqZXBiaXNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4MzgzNjQsImV4cCI6MjA2ODQxNDM2NH0.0BGyl12E6ZU6qFFpSxWvvgc3AA9gXul6R2esTPa1iCg'
 );
 
+// Login function
 async function login() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
@@ -15,10 +16,7 @@ async function login() {
     return;
   }
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password
-  });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     errorEl.textContent = "Login failed: " + error.message;
@@ -35,8 +33,16 @@ async function login() {
   loadProperties();
 }
 
+// Load properties for logged-in user
 async function loadProperties() {
-  const { data, error } = await supabaseClient.from('Properties').select('*');
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  const { data, error } = await supabase
+    .from('Properties')
+    .select('*')
+    .eq('user_id', user.id);
 
   const list = document.getElementById('propertyList');
   list.innerHTML = '';
@@ -58,7 +64,35 @@ async function loadProperties() {
   });
 }
 
+// Add property
+document.getElementById('propertyForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const address = document.getElementById('address').value.trim();
+  const rent = parseFloat(document.getElementById('rent').value);
+  const message = document.getElementById('formMessage');
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  const { data, error } = await supabase.from('Properties').insert([{
+    user_id: user.id,
+    address,
+    rent
+  }]);
+
+  if (error) {
+    message.textContent = "Failed to add property: " + error.message;
+    return;
+  }
+
+  message.textContent = "Property added!";
+  document.getElementById('propertyForm').reset();
+  loadProperties();
+});
+
+// Logout
 async function logout() {
-  await supabaseClient.auth.signOut();
+  await supabase.auth.signOut();
   window.location.reload();
 }
