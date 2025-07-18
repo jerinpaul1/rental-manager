@@ -7,17 +7,41 @@ async function login() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
   const errorEl = document.getElementById('error');
-alert("Login button clicked!"); // This confirms the button works
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) {
-    errorEl.textContent = error.message;
+  if (!email || !password) {
+    errorEl.textContent = "Please enter both email and password.";
     return;
   }
 
-  errorEl.textContent = '';
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    errorEl.textContent = "Login failed: " + error.message;
+    return;
+  }
+
+  errorEl.textContent = "";
   document.querySelector('h1').textContent = `Welcome, ${email}`;
+  document.getElementById('login-section').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
+
+  // Optional: show success message
+  alert("Login successful!");
+
+  loadProperties();
+}
+
+  errorEl.textContent = "";
+  document.querySelector('h1').textContent = `Welcome, ${email}`;
+  document.getElementById('login-section').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+
+  // Optional: show success message
+  alert("Login successful!");
+
   loadProperties();
 }
 
