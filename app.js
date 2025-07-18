@@ -63,7 +63,7 @@ async function loadProperties() {
 
   data.forEach(prop => {
     const li = document.createElement('li');
-    li.textContent = `${prop.address} – Rent: £${prop.rent}`;
+    li.textContent = `${prop.address} – Rent: £${prop.monthly_rent}`;
     list.appendChild(li);
   });
 }
