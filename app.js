@@ -33,12 +33,12 @@ async function login() {
   loadProperties();
 }
 
-// Load user-specific properties
+// Load user-specific properties and tenants
 async function loadProperties() {
   const { data: { user } } = await supabaseClient.auth.getUser();
   if (!user) return;
 
-  const { data, error } = await supabaseClient
+  const { data: properties, error } = await supabaseClient
     .from('Properties')
     .select('*')
     .eq('user_id', user.id);
@@ -51,16 +51,83 @@ async function loadProperties() {
     return;
   }
 
-  if (data.length === 0) {
+  if (properties.length === 0) {
     list.innerHTML = `<li>No properties found.</li>`;
     return;
   }
 
-  data.forEach(prop => {
-    const li = document.createElement('li');
-    li.textContent = `${prop.address} – Rent: £${prop.monthly_rent}`;
-    list.appendChild(li);
-  });
+  const template = document.getElementById('propertyTemplate');
+
+  for (const prop of properties) {
+    const clone = template.content.cloneNode(true);
+    clone.querySelector('.property-address').textContent = prop.address;
+    clone.querySelector('.property-rent').textContent = prop.monthly_rent;
+
+    const tenantList = clone.querySelector('.tenant-list');
+    const tenantForm = clone.querySelector('.tenant-form');
+
+    // Load tenants for this property
+    const { data: tenants, error: tenantError } = await supabaseClient
+      .from('Tenants')
+      .select('*')
+      .eq('property_id', prop.id)
+      .eq('user_id', user.id);
+
+    if (tenantError) {
+      tenantList.innerHTML = `<li>Error loading tenants: ${tenantError.message}</li>`;
+    } else if (tenants.length === 0) {
+      tenantList.innerHTML = '<li>No tenants added.</li>';
+    } else {
+      tenants.forEach(tenant => {
+        const li = document.createElement('li');
+        li.textContent = `${tenant.name} (${tenant.phone}, ${tenant.email}) – Move-in: ${tenant.move_in_date}`;
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Remove';
+        delBtn.style.marginLeft = '10px';
+        delBtn.onclick = async () => {
+          const { error } = await supabaseClient.from('Tenants').delete().eq('id', tenant.id);
+          if (error) {
+            alert('Failed to remove tenant: ' + error.message);
+          } else {
+            loadProperties();
+          }
+        };
+
+        li.appendChild(delBtn);
+        tenantList.appendChild(li);
+      });
+    }
+
+    // Handle adding new tenant
+    tenantForm.onsubmit = async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(tenantForm);
+      const name = formData.get('name');
+      const phone = formData.get('phone');
+      const email = formData.get('email');
+      const move_in_date = formData.get('move_in_date');
+
+      const { data, error } = await supabaseClient.from('Tenants').insert([{
+        user_id: user.id,
+        property_id: prop.id,
+        name,
+        phone,
+        email,
+        move_in_date
+      }]);
+
+      if (error) {
+        alert("Failed to add tenant: " + error.message);
+      } else {
+        tenantForm.reset();
+        loadProperties();
+      }
+    };
+
+    list.appendChild(clone);
+  }
 }
 
 // Add property
