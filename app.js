@@ -73,7 +73,7 @@ document.getElementById('propertyForm').addEventListener('submit', async (e) => 
   e.preventDefault();
 
   const address = document.getElementById('address').value.trim();
-  const rent = parseFloat(document.getElementById('rent').value);
+  const rent = parseFloat(document.getElementById('monthly_rent').value);
   const message = document.getElementById('formMessage');
 
   const {
