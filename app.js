@@ -7,7 +7,7 @@ async function login() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
   const errorEl = document.getElementById('error');
-
+alert("Login button clicked!"); // This confirms the button works
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
